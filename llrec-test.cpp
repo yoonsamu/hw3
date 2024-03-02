@@ -81,14 +81,25 @@ int main(int argc, char* argv[])
     // -----------------------------------------------
     // Feel free to update any code below this point
     // -----------------------------------------------
-    Node* head = readList(argv[1]);
-    cout << "Original list: ";
-    print(head);
+    // new linked list node
+    Node* list = new Node(2, nullptr);
+    //initialize small and large pointers to start of list
+    Node* small = (Node*) &list;
+    Node* large = (Node*) &list; 
+    llpivot(list, small, large, 1);
 
-    // Test out your linked list code
-
-
-
+    // while loop through the small list, to delete all the nodes
+    while (small != NULL) {
+        Node* temp = small;
+        small = small->next;
+        delete temp;
+    }
+    // same thing for the large
+    while (large != NULL) {
+        Node* temp = large;
+        large = large->next;
+        delete temp;
+    }
     
     return 0;
 
