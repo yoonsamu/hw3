@@ -2,8 +2,8 @@
 #define HEAP_H
 #include <functional>
 #include <stdexcept>
-#include <algorithm>
 #include <vector>
+#include <algorithm>
 
 template <typename T, typename PComparator = std::less<T> >
 class Heap
@@ -61,29 +61,31 @@ public:
    */
   size_t size() const;
 
+
 private:
   /// Add whatever helper functions and data members you need below
-  std::vector<T> array;
+  //the array of values
+  std::vector<T> arr;
 
+  //the n in n-ary heap
   int x;
-  PComparator compare;
 
-  
+  //the comparison (less than or greater than)
+  PComparator compare;
 };
 
 // Add implementation of member functions here
+template <typename T, typename PComparator>
+Heap<T, PComparator>::Heap(int m, PComparator c){
+  x = m;
+  compare = c;
+}
 
 template <typename T, typename PComparator>
 Heap<T, PComparator>::~Heap() {
-  // destructor clearing the inside vector
-  array.clear();
+  arr.clear();
 }
 
-template <typename T, typename PComparator>
-Heap<T, PComparator>::Heap(int m, PComparator c) {
-  compare = c;
-  x = m;
-}
 // We will start top() for you to handle the case of 
 // calling top on an empty heap
 template <typename T, typename PComparator>
@@ -92,17 +94,11 @@ T const & Heap<T,PComparator>::top() const
   // Here we use exceptions to handle the case of trying
   // to access the top element of an empty heap
   if(empty()){
-    // ================================
-    // throw the appropriate exception
-    // ================================
     throw std::underflow_error("");
-
   }
   // If we get here we know the heap has at least 1 item
   // Add code to return the top element
-  return array[0];
-
-
+  return arr[0];
 }
 
 
@@ -111,43 +107,32 @@ T const & Heap<T,PComparator>::top() const
 template <typename T, typename PComparator>
 void Heap<T,PComparator>::pop()
 {
-  //
   if(empty()){
-    // ================================
-    // throw the appropriate exception
-    // ================================
     throw std::underflow_error("");
-
   }
-  // replace the root of the heap with the last element
-  // heapify again
-  array[0] = array.back();
-  array.pop_back();
-  // don't heapify if the heap is empty or only has one
-  if (size() > 1) {
+  arr[0] = arr.back();
+  arr.pop_back();
+  if (size() == 1 || size() == 0) {
     return;
-  } 
+  }
   int idx = 0;
-  size_t childIdx = (idx * x) + 1;
-
+  size_t childIdx = idx * x + 1; //starts at the leftmost child
   while (childIdx < size()) {
-    // find the highest priority child
-    // start with the leftmost child
-    int highChildIdx = (idx * x) + 1;
+    int highestChildIdx = idx * x + 1;
+    //traverses through each child
     for (int i = 1; i <= x; i++) {
-      childIdx = (idx * x) + i;
+      childIdx = idx * x + i;
       if (childIdx >= size()) {
         break;
       }
-      // swap the child which has the higher priority
-      if (compare(array[childIdx], array[highChildIdx])) {
-        highChildIdx = childIdx;
+      if (compare(arr[childIdx], arr[highestChildIdx])) {
+        highestChildIdx = childIdx;
       }
     }
-    if (compare(array[highChildIdx] , array[idx])) {
-      std::swap(array[idx], array[highChildIdx]);
-      idx = highChildIdx;
-      childIdx = (idx * x) + 1;
+    if (compare(arr[highestChildIdx], arr[idx])) {
+      std::swap(arr[idx], arr[highestChildIdx]);
+      idx = highestChildIdx;
+      childIdx = idx * x + 1;
     }
     else {
       break;
@@ -157,14 +142,14 @@ void Heap<T,PComparator>::pop()
 
 template <typename T, typename PComparator>
 void Heap<T, PComparator>::push(const T& item) {
-  array.push_back(item);
+  arr.push_back(item);
   if (size() == 1) {
     return;
   }
   int itemIdx = size() - 1;
   int parentIdx = (itemIdx - 1)/ x;
-  while (compare(array[itemIdx], array[parentIdx]) && parentIdx >= 0) {
-    std::swap(array[itemIdx], array[parentIdx]);
+  while (compare(arr[itemIdx], arr[parentIdx]) && parentIdx >= 0) {
+    std::swap(arr[itemIdx], arr[parentIdx]);
     itemIdx = parentIdx;
     parentIdx = (itemIdx - 1) / x;
   }
@@ -182,7 +167,7 @@ bool Heap<T, PComparator>::empty() const{
 */
 template <typename T, typename PComparator>
 size_t Heap<T, PComparator>::size() const {
-  return array.size();
+  return arr.size();
 }
-#endif
 
+#endif
